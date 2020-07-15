@@ -14,7 +14,7 @@
 
     <groupId>org.jboss.resteasy</groupId>
     <artifactId>resteasy-jaxrs-all</artifactId>
-    <version>4.6.0-SNAPSHOT</version>
+    <version>4.6.0.TACC</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -50,13 +50,27 @@
         <url>https://github.com/resteasy/Resteasy/tree/master/</url>
     </scm>
 
+<!--    <distributionManagement>-->
+<!--        <repository>-->
+<!--            <id>jboss-releases-repository</id>-->
+<!--            <name>JBoss Releases Repository</name>-->
+<!--            <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>-->
+<!--        </repository>-->
+<!--    </distributionManagement>-->
+
     <distributionManagement>
         <repository>
-            <id>jboss-releases-repository</id>
-            <name>JBoss Releases Repository</name>
-            <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
+            <id>tass-cc-releases</id>
+            <name>Local Nexus Repository</name>
+            <url>http://192.168.3.150:8081/repository/maven-releases/</url>
         </repository>
+        <snapshotRepository>
+            <id>tass-cc-snapshots</id>
+            <name>Local Nexus Snapshots Repository</name>
+            <url>http://192.168.3.150:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
     </distributionManagement>
+
 
     <issueManagement>
         <system>JIRA</system>
@@ -124,8 +138,8 @@
                 <module>resteasy-wadl</module>
                 <module>resteasy-wadl-undertow-connector</module>
                 <module>arquillian</module>
-                <module>profiling-tests</module>
-                <module>testsuite</module>
+<!--                <module>profiling-tests</module>-->
+<!--                <module>testsuite</module>-->
             </modules>
             <dependencyManagement>
                 <dependencies>
@@ -356,13 +370,13 @@
             </plugin>
         </plugins>
     </build>
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jxr-plugin</artifactId>
-                <version>${version.jxr.plugin}</version>
-            </plugin>
-        </plugins>
-    </reporting>
+<!--    <reporting>-->
+<!--        <plugins>-->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-jxr-plugin</artifactId>-->
+<!--                <version>${version.jxr.plugin}</version>-->
+<!--            </plugin>-->
+<!--        </plugins>-->
+<!--    </reporting>-->
 </project>

@@ -21,11 +21,12 @@ import org.jboss.resteasy.core.ResteasyDeploymentImpl;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.plugins.server.embedded.EmbeddedJaxrsServer;
 import org.jboss.resteasy.plugins.server.embedded.SecurityDomain;
+import cn.com.tass.platform.junorest.plugins.server.netty.config.SSLConfig;
+import cn.com.tass.platform.junorest.plugins.server.netty.config.SSLContextFactory;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jboss.resteasy.util.EmbeddedServerHelper;
 import org.jboss.resteasy.util.PortProvider;
 
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import java.net.InetSocketAddress;
 import java.util.Collections;
@@ -58,7 +59,10 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer<NettyJaxrsServer>
    private EventLoopGroup eventExecutor;
    private int ioWorkerCount = Runtime.getRuntime().availableProcessors() * 2;
    private int executorThreadCount = 16;
-   private SSLContext sslContext;
+//   private SSLContext sslContext;
+
+   private SSLConfig sslConfig;
+
    private SniConfiguration sniConfiguration;
    private int maxRequestSize = 1024 * 1024 * 10;
    private int maxInitialLineLength = 4096;
@@ -189,11 +193,13 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer<NettyJaxrsServer>
 
 
 
-   public NettyJaxrsServer setSSLContext(SSLContext sslContext)
+   public NettyJaxrsServer setSSLConfig(SSLConfig sslConfig)
    {
-      this.sslContext = sslContext;
+      this.sslConfig = sslConfig;
       return this;
    }
+
+
 
    public NettyJaxrsServer setSniConfiguration(SniConfiguration sniConfiguration)
    {
@@ -333,7 +339,7 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer<NettyJaxrsServer>
 
    private ChannelInitializer<SocketChannel> createChannelInitializer() {
       final RequestDispatcher dispatcher = createRequestDispatcher();
-      if (sslContext == null && sniConfiguration == null) {
+      if (sslConfig == null && sniConfiguration == null) {
          return new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(SocketChannel ch) throws Exception {
@@ -344,9 +350,8 @@ public class NettyJaxrsServer implements EmbeddedJaxrsServer<NettyJaxrsServer>
          return new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(SocketChannel ch) throws Exception {
-               SSLEngine engine = sslContext.createSSLEngine();
-               engine.setUseClientMode(false);
-               ch.pipeline().addFirst(new SslHandler(engine));
+               SSLEngine openSslServerEngine = SSLContextFactory.getOpenSslServerEngine(sslConfig, ch.alloc());
+               ch.pipeline().addFirst(new SslHandler(openSslServerEngine));
                setupHandlers(ch, dispatcher, HTTPS);
             }
          };
